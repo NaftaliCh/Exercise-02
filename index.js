@@ -1,3 +1,4 @@
+
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -56,7 +57,7 @@ app.post("/students", async (req, res) => {
   }
 });
 
-// -------------------------------------------------------------------------------------------------
+
 // Get student by ID Prisma
 app.get("/students/:id", async (req, res) => {
   const { id } = req.params;
