@@ -1,34 +1,22 @@
-const { Pool } = require('pg');
-const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const path = require("path");
 const multer = require("multer");
 const cors = require("cors");
-const { PrismaClient } = require("@prisma/client");
+const database = require("./db");
 
+const express = require('express');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+
 const upload = multer({ dest: "public"});
 const app = express();
 const port = 3000;
-
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'class_backend',
-  password: '00000000',
-  port: 5432,
-});
 
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
-
-module.exports = {
-  query: (text, params) => pool.query(text, params)
-};
-
 
 // Get students
 app.get("/students", async (req, res) => {
@@ -68,6 +56,7 @@ app.post("/students", async (req, res) => {
   }
 });
 
+// -------------------------------------------------------------------------------------------------
 // Get student by ID Prisma
 app.get("/students/:id", async (req, res) => {
   const { id } = req.params;
@@ -75,7 +64,7 @@ app.get("/students/:id", async (req, res) => {
   try {
     const student = await prisma.students.findUnique({
       where: {
-        id: parseInt(id),
+        id: parsenInt(id),
       },
     });
 
@@ -143,20 +132,5 @@ app.delete("/students/:id", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server berjalan pada port ${port}`);
-});
-
-
-
-
-
-/*
-// Coba membuat koneksi ke database
-pool.connect((err, client, release) => {
-  if (err) {
-    return console.error('Error acquiring client', err.stack);
-  }
-  console.log('Connected to PostgreSQL database');
-  client.release();
-});
-*/
+    console.log(`Server berjalan pada port ${port}`);
+  });
